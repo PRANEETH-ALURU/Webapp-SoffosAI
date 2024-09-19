@@ -1,7 +1,7 @@
 # Webapp-Soffos
- <h1>Application name: Zero2Hero</h1>
+ <h1>Zero2Hero</h1>
  
-This web application is an innovative platform designed for self-driven learners. Whether starting from zero or looking to sharpen existing skills, users can engage in autonomous learning, practice, and assessments. 
+The web application <h4><b>"Zero2Hero"</b></h4> is an innovative platform designed for self-driven learners. Whether starting from zero or looking to sharpen existing skills, users can engage in autonomous learning, practice, and assessments. 
 The functionalities present in application were built using some of the SoffosAI SDK features. 
 
 <h2>Instructions to Run the application</h2>
