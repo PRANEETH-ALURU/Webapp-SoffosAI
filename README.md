@@ -21,6 +21,6 @@ The functionalities present in application were built using some of the SoffosAI
 4) The application gets started on port 3500. <br> 
 You'll get this: Server running at http://localhost:3500<br>
 5) Now your application starts on your browser.
-
 <br>
-This application can be improved further by adding advanced functionalities.
+<br>
+Hope you liked the mini-application. This application can be improved further by adding advanced functionalities. I'm open to feedback. Thanks for running my application.
