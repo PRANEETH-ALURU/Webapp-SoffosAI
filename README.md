@@ -4,7 +4,7 @@
 This web application is an innovative platform designed for self-driven learners. Whether starting from zero or looking to sharpen existing skills, users can engage in autonomous learning, practice, and assessments. 
 The functionalities present in application were built using some of the SoffosAI SDK features. 
 
-<h2>Instructions to run</h2>
+<h2>Instructions to Run the application</h2>
 <h3> 1) Using Docker </h3>
 1) Download this repository or clone this using git by git clone *repository link*. <br>
 2) Download and install docker engine. <br>
