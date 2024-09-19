@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #a4cff5; 
+            color: #333; 
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative; 
+        }
+
+        
+        .top-buttons {
+            display: flex;
+            justify-content: space-between;
+            position: absolute;
+            top: 20px;
+            width: 100%;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+
+        .top-buttons a {
+            padding: 10px 20px;
+            background-color: #2980b9; 
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .top-buttons a:hover {
+            background-color: #1a6690;
+        }
+
+        
+        form, #questions, #results, #previousScores {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h1 {
+            color: #2c3e50; /* Darker blue */
+        }
+
+        label, select, textarea {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background-color: #2980b9; 
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #1a6690;
+        }
+
+        p {
+            margin: 10px 0;
+        }
+
+        .question {
+            margin-bottom: 20px;
+        }
+
+       
+        .modal {
+            display: none; /* Hidden initially */
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 40px;
+            border: 1px solid #888;
+            width: 50%;
+            text-align: center;
+            border-radius: 10px;
+        } 
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: black;
+        }
+
+        #closeModalBtn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Buttons -->
+    <div class="top-buttons">
+        <a href="index.html">Home</a>
+    </div>
+
+    <!-- Modal Popup -->
+    <div id="instructionsModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Welcome to the Assessment Page</h2>
+            <p>On this page you can paste text from your notes to generate different types of questions from that context to submit answers. 
+                Choose between "True or False" and "Fill in the Blanks" exam modes to assess how much you've learned.
+                You can see the previous scores after submitting the answers.</p>
+            <button id="closeModalBtn">Got it!</button>
+        </div>
+    </div>
+
+    <h1>Assessment Page</h1>
+    <form id="contextForm">
+        <label for="context">Enter Context:</label>
+        <textarea id="context" name="context" rows="4" cols="50"></textarea>
+        <label for="mode">Select Mode:</label>
+        <select id="mode" name="mode">
+            <option value="true or false">True or False</option>
+            <option value="fill in the blanks">Fill in the Blanks</option>
+        </select>
+        <button type="submit">Generate Questions</button>
+    </form>
+    
+    <div id="questions"></div>
+    <button id="submitAnswers" style="display:none;">Submit Answers</button>
+    <button id="revealAnswers" style="display:none;">Reveal Answers</button>
+    <div id="results"></div>
+    <div id="previousScores"></div>
+    <button id="clearScores" style="display: none;">Clear Scores</button>
+    
+    <script>
+        let generatedQuestions = [];
+
+        // Modal functionality
+        window.onload = function() {
+            // Show the modal 0.7 second after the page loads
+            setTimeout(() => {
+                const modal = document.getElementById('instructionsModal');
+                modal.style.display = 'flex';
+            }, 700);
+
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const span = document.getElementsByClassName('close')[0];
+
+            // Close the modal when the user clicks the "Got it!" button
+            closeModalBtn.addEventListener('click', function() {
+                document.getElementById('instructionsModal').style.display = 'none';
+            });
+
+            // Close the modal when the user clicks the "X" icon
+            span.addEventListener('click', function() {
+                document.getElementById('instructionsModal').style.display = 'none';
+            });
+
+            // Close the modal if the user clicks anywhere outside the modal content
+            window.addEventListener('click', function(event) {
+                if (event.target == document.getElementById('instructionsModal')) {
+                    document.getElementById('instructionsModal').style.display = 'none';
+                }
+            });
+
+            // Display previous scores on page load
+            displayPreviousScores();
+        };
+
+        document.getElementById('contextForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const context = document.getElementById('context').value;
+            const mode = document.getElementById('mode').value;
+
+            const response = await fetch('/generate-questions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ context, mode })
+            });
+
+            const data = await response.json();
+            generatedQuestions = data.questions;
+            const questionsDiv = document.getElementById('questions');
+            questionsDiv.innerHTML = '';
+
+            data.questions.forEach((question, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.classList.add('question');
+                questionDiv.innerHTML = `<p>${index + 1}. ${question.question}</p>`;
+                if (question.choices) {
+                    question.choices.forEach(choice => {
+                        questionDiv.innerHTML += `<input type="radio" name="question${index}" value="${choice}">${choice}<br>`;
+                    });
+                } else if (mode === 'true or false') {
+                    questionDiv.innerHTML += `
+                        <input type="radio" name="question${index}" value="true">True<br>
+                        <input type="radio" name="question${index}" value="false">False<br>
+                    `;
+                } else {
+                    questionDiv.innerHTML += `<input type="text" name="question${index}"><br>`;
+                }
+                questionsDiv.appendChild(questionDiv);
+            });
+
+            document.getElementById('submitAnswers').style.display = 'block';
+            document.getElementById('revealAnswers').style.display = 'none';
+        });
+
+        document.getElementById('submitAnswers').addEventListener('click', function() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+        
+            let score = 0;
+        
+            generatedQuestions.forEach((question, index) => {
+                const userAnswerElement = document.querySelector(`input[name="question${index}"]:checked`);
+                let userAnswer = userAnswerElement ? userAnswerElement.value : document.querySelector(`input[name="question${index}"]`)?.value;
+                const correctAnswer = question.correct_answer;
+        
+                // Direct comparison for true/false values
+                let isCorrect = false;
+        
+                if (userAnswer !== undefined && correctAnswer !== undefined) {
+                    if (userAnswer.toLowerCase() === 'true' || userAnswer.toLowerCase() === 'false') {
+                        // Handle boolean comparison explicitly
+                        isCorrect = (userAnswer.toLowerCase() === correctAnswer.toString().toLowerCase());
+                    } else {
+                        // Handle other types of questions (e.g., fill in the blanks)
+                        isCorrect = (userAnswer.trim().toLowerCase() === correctAnswer.trim().toLowerCase());
+                    }
+                }
+        
+                if (isCorrect) {
+                    score++;
+                }
+            });
+        
+            resultsDiv.innerHTML += `<p>Your score: ${score} / ${generatedQuestions.length}</p>`;
+        
+            // Store the score in local storage
+            let previousScores = JSON.parse(localStorage.getItem('previousScores')) || [];
+            previousScores.push(score);
+            localStorage.setItem('previousScores', JSON.stringify(previousScores));
+        
+            // Display previous scores
+            displayPreviousScores();
+
+            // Show the "Reveal Answers" button
+            document.getElementById('revealAnswers').style.display = 'block';
+        });
+
+        document.getElementById('revealAnswers').addEventListener('click', function() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML += '<h3>Correct Answers</h3>';
+        
+            generatedQuestions.forEach((question, index) => {
+                const userAnswerElement = document.querySelector(`input[name="question${index}"]:checked`);
+                let userAnswer = userAnswerElement ? userAnswerElement.value : document.querySelector(`input[name="question${index}"]`)?.value;
+                const correctAnswer = question.correct_answer;
+        
+                resultsDiv.innerHTML += `<p>Question ${index + 1}: Your answer: ${userAnswer || 'No answer'} | Correct answer: ${correctAnswer}</p>`;
+            });
+        });
+
+        // Function to display previous scores
+        function displayPreviousScores() {
+            const previousScores = JSON.parse(localStorage.getItem('previousScores')) || [];
+            const previousScoresDiv = document.getElementById('previousScores');
+            previousScoresDiv.innerHTML = '<h2>Previous Scores</h2>';
+            if (previousScores.length > 0) {
+                previousScores.forEach((score, index) => {
+                    previousScoresDiv.innerHTML += `<p>Attempt ${index + 1}: ${score}</p>`;
+                });
+                // Show the "Clear Scores" button if there are scores to clear
+                document.getElementById('clearScores').style.display = 'block';
+            } else {
+                previousScoresDiv.innerHTML += '<p>No previous scores.</p>';
+                document.getElementById('clearScores').style.display = 'none';
+            }
+        }
+
+        // Clear Scores Functionality
+        document.getElementById('clearScores').addEventListener('click', function() {
+            localStorage.removeItem('previousScores');
+            displayPreviousScores();
+        });
+    </script>
+</body>
+</html>

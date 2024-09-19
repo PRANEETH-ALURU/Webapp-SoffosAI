@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practice Assessment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #a4cff5; 
+            color: #333; 
+            position: relative; 
+        }
+
+        .top-buttons {
+            display: flex;
+            justify-content: space-between;
+            position: absolute;
+            top: 20px;
+            width: 100%;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+
+        .top-buttons a {
+            padding: 10px 20px;
+            background-color: #2980b9; /* Blue button */
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .top-buttons a:hover {
+            background-color: #1a6690;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 80px auto; 
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        h1 {
+            color: #2c3e50; 
+            text-align: center;
+        }
+
+        textarea, input[type="text"] {
+            display: block;
+            margin-bottom: 10px;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: none;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #2980b9;  
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #1a6690;
+        }
+
+        .submit-btn {
+            background-color: #2980b9; 
+        }
+
+        .modal {
+            display: none; 
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 40px;
+            border: 1px solid #888;
+            width: 50%;
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: black;
+        }
+
+        #closeModalBtn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .another-question-btn {
+            background-color: #2196F3;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        .correct-answer {
+            margin-top: 20px;
+            background-color: #f1f1f1;
+            padding: 10px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Buttons -->
+    <div class="top-buttons">
+        <a href="initial-learning.html">Initial Learning</a>
+        <a href="assessment.html">Assessment</a>
+    </div>
+
+    <!-- Modal Popup -->
+    <div id="instructionsModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Welcome to the Practice Page</h2>
+            <p>This page allows you to assess your understanding of the concepts you've learned. Answer each question by framing the sentence completely, using key terms, metrics, etc. The "Score" parameter indicates relevance to the original answer, where 0 is the least relevant and 1 is the most relevant.</p>
+            <button id="closeModalBtn">Got it!</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Practice Assessment</h1>
+        
+        <p id="question"><strong>Question:</strong> What is photosynthesis?</p>
+        
+        <textarea id="studentAnswer" placeholder="Enter your answer here..." required></textarea>
+        
+        <!-- Submit button -->
+        <button class="submit-btn" onclick="submitAnswer()">Submit Answer</button>
+        
+        <button class="another-question-btn" onclick="showAnotherQuestion()">Another Question</button>
+        
+        <div class="result" id="scoringResult"></div>
+        
+        <!-- Hidden correct answer, revealed after submission -->
+        <div class="correct-answer" id="correctAnswer" style="display: none;">
+            <h3>Correct Answer:</h3>
+            <p id="correctAnswerText">Photosynthesis is the process by which plants use sunlight, water, and carbon dioxide to produce oxygen and glucose.</p>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            // Show the modal 0.7 second after the page loads
+            setTimeout(() => {
+                const modal = document.getElementById('instructionsModal');
+                modal.style.display = 'flex';
+            }, 700);
+
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const span = document.getElementsByClassName('close')[0];
+
+            // Close the modal when the user clicks the "Got it!" button
+            closeModalBtn.addEventListener('click', function() {
+                document.getElementById('instructionsModal').style.display = 'none';
+            });
+
+            // Close the modal when the user clicks the "X" icon
+            span.addEventListener('click', function() {
+                document.getElementById('instructionsModal').style.display = 'none';
+            });
+
+            // Close the modal if the user clicks anywhere outside the modal content
+            window.addEventListener('click', function(event) {
+                if (event.target == document.getElementById('instructionsModal')) {
+                    document.getElementById('instructionsModal').style.display = 'none';
+                }
+            });
+        };
+
+        const questions = [
+            {
+                question: "What is photosynthesis?",
+                context: "The process by which plants make their own food using sunlight, water, and carbon dioxide.",
+                expectedAnswer: "Photosynthesis is the process by which plants use sunlight, water, and carbon dioxide to produce oxygen and glucose."
+            },
+            {
+                question: "Where does photosynthesis take place in plant cells?",
+                context: "Photosynthesis takes place in the chloroplasts of plant cells, which contain chlorophyll, the substance needed for the process.",
+                expectedAnswer: "In the chloroplasts of plant cells that contains chlorophyll"
+            },
+            {
+                question: "What happens to the glucose produced by photosynthesis?",
+                context: "Photosynthesis takes places in plants. Glucose is the byproduct of photosynthesis used for getting energy",
+                expectedAnswer: "Plants use glucose for energy or to convert into sugar or cellulose."
+            },
+            // Add more questions as needed
+        ];
+
+        let currentQuestionIndex = 0;
+
+        function showAnotherQuestion() {
+            currentQuestionIndex = (currentQuestionIndex + 1) % questions.length;
+            const currentQuestion = questions[currentQuestionIndex];
+            document.getElementById('question').innerHTML = `<strong>Question:</strong> ${currentQuestion.question}`;
+            document.getElementById('studentAnswer').value = '';
+            document.getElementById('scoringResult').innerText = '';
+            document.getElementById('correctAnswer').style.display = 'none';
+        }
+
+        async function submitAnswer() {
+            const studentAnswer = document.getElementById('studentAnswer').value;
+            const currentQuestion = questions[currentQuestionIndex];
+            
+            // Prepare request body
+            const payload = {
+                context: currentQuestion.context,
+                question: currentQuestion.question,
+                userAnswer: studentAnswer,
+                expectedAnswer: currentQuestion.expectedAnswer
+            };
+
+            // Call API to score the assessment
+            const response = await fetch('/score-assessment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+            const { score, reasoning } = result;
+
+            // Display score and reasoning
+            document.getElementById('scoringResult').innerText = `Score: ${score}\nReasoning: ${reasoning}`;
+            
+            // Reveal the correct answer
+            document.getElementById('correctAnswerText').innerText = currentQuestion.expectedAnswer;
+            document.getElementById('correctAnswer').style.display = 'block';
+        }
+    </script>
+</body>
+</html>

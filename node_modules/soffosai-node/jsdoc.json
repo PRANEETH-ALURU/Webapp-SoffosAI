@@ -1,0 +1,28 @@
+{
+    "tags": {
+      "allowUnknownTags": true,
+      "dictionaries": ["jsdoc"]
+    },
+    "source": {
+      "include": ["./src/core"],
+      "includePattern": ".+\\.mjs(doc|x)?$",
+      "excludePattern": "(^|\\/|\\\\)_",
+      "exclude": [
+        "./src/core/services/service.mjs",
+        "./src/core/nodes/node.mjs",
+        "./src/core/pipelines/pipeline.mjs"
+      ]
+    },
+    "plugins": [],
+    "templates": {
+      "cleverLinks": false,
+      "monospaceLinks": false
+    },
+    "opts": {
+      "readme": "./README.md",
+      "encoding": "utf8",
+      "destination": "./docs/",
+      "recurse": true,
+      "verbose": true
+    }
+  }
