@@ -1,0 +1,6 @@
+
+express
+body-parser
+cors
+dotenv
+axios
