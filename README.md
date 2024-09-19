@@ -7,7 +7,7 @@ The functionalities present in application were built using some of the SoffosAI
 <h2>Instructions to run</h2>
 1) Download this repository or clone this using git by git clone *repository link*. <br>
 2) Open the folder in your IDEs like Visual Studio Code IDE. <br>
-3) Open terminal and type node server.js <br>
+3) Open terminal and type <b>node server.js</b> <br>
 4) The application gets started on port 3500. <br> 
 You'll get this: Server running at http://localhost:3500<br>
 5) Now your application starts on your browser.
