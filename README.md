@@ -10,8 +10,8 @@ The functionalities present in application were built using some of the SoffosAI
 2) Download and install docker engine. <br>
 3) Open the terminal and verify you have docker installed. <br>
 4) Now open the location of the application folder in the terminal. <br>
-5) Run the following command (to build a docker image): <b>docker build -t my-web-app .<b>  <br>
-6) The docker image is created. Now run this command <b>docker run -p 3500:3500 my-web-app<b>  <br>
+5) Run the following command (to build a docker image): <b>docker build -t my-web-app .</b>  <br>
+6) The docker image is created. Now run this command <b>docker run -p 3500:3500 my-web-app</b>  <br>
  Now the application will open on a browser. <br>
 <br>
  <h3> 2) Without Docker </h3>
